@@ -4,6 +4,8 @@ Sub actVsPriorNBudget_report()
     '//Updated 09/10/2013 11:57 pm, TO ADD WORKING DAYS AND EBITDA, REFORMAT TO DENMARK REPORT
     '//Updated 02/05/2014 2:07 pm, REFORMAT TO DENMARK REPORT
     '//Updated 02/10/2014 increase parameter 1400 to 1450
+    '//Updated 05/21/2014 ADD MORE BUDGET ACCOUNTS AND THEIR MAPPINGS
+    '//Updated 05/27/2014 ADD REFERENCE WORKING DAYS, UNITS, AND CHANGES IN BALANCE SHEET
     
     Reset
    
@@ -13,7 +15,7 @@ Sub actVsPriorNBudget_report()
     Dim currDate As Date
     Dim myMap(350, 4) As Variant '//OLD ROW, trnd(a,1)+trnd(a,2), NEW ROW, "F" FOR FORMAT
     Dim myTab(2) As Variant '//SOURCE TABS FOR TREND REPORTS AND BUDGET REPORTS
-    Dim inpt(2, 13, 7) As Variant '// YTD/MTD, CURRENT FISCAL YEAR MONTHS, INPUT PARAMETERS
+    Dim inpt(2, 13, 8) As Variant '// YTD/MTD, CURRENT FISCAL YEAR MONTHS, INPUT PARAMETERS
     Dim inptPrior(2, 12, 5) As Variant '// YTD/MTD, PRIOR FISCAL YEAR MONTHS, INPUT PARAMETERS
     Dim clss(1450, 6) As Variant '// GL CLASSIFICATION INPUT, LATER MATECHED WITH trnd TO CAPTURE BALANCE_
     '//ACCOUNT NUMBER'//ACCOUNT CLASSIFICATION'//ACCOUNT DESCRIPTION'//ROW OF CURRENT YEAR TB'//ROW OF PRIOR YEAR TB'//"M" FOR MATCHED IN TREND REPORT LINE ITEMS
@@ -50,16 +52,25 @@ Sub actVsPriorNBudget_report()
             Next b
             
             If f = 1 Then
-                inpt(f, d, 7) = Cells(106, a)
+                inpt(f, d, 7) = Cells(106, a) '//MTD WORKING DAYS
+                inpt(f, d, 8) = Cells(113, a)
             End If
             
             If f = 2 Then
-                inpt(f, d, 7) = Cells(107, a)
+                inpt(f, d, 7) = Cells(107, a) '//YTD WORKING DAYS
+                inpt(f, d, 8) = Cells(114, a)
             End If
             
             w = ColNumToLetter(a) & Trim(Str(5 + 86 + 6 * (f - 1)))
 '            MsgBox w
             inpt(f, d, 5) = "=Input!" & w
+            
+            w = ColNumToLetter(a) & Trim(Str(112 + f))
+            inpt(f, d, 8) = "=Input!" & w
+            
+            w = ColNumToLetter(a) & Trim(Str(105 + f))
+            inpt(f, d, 7) = "=Input!" & w
+            
             
         Next a
         
@@ -79,7 +90,7 @@ Sub actVsPriorNBudget_report()
 
     '//READ IN "Input" FOR bdgtMap()
     c = 0
-    For a = 47 To 96
+    For a = 137 To 300
         If Len(Cells(a, 1)) > 0 And Len(Cells(a, 2)) > 0 Then
             c = c + 1
             bdgtMap(c, 1) = Cells(a, 1) '//FORMAT SOURCE TAB'S LINE ITEM
@@ -735,6 +746,9 @@ Sub actVsPriorNBudget_report()
                         Cells(a, 5) = "=C" & Trim(Str(a)) & "-D" & Trim(Str(a))
                         Cells(a, 6) = "=E" & Trim(Str(a)) & "/D" & Trim(Str(a))
                         Cells(a, 8) = inpt(f, 1, 5)
+                        Cells(a, 9) = inpt(f, 1, 8)
+                        Cells(a, 10) = "=H" & Trim(Str(a)) & "-I" & Trim(Str(a))
+                        Cells(a, 11) = "=J" & Trim(Str(a)) & "/I" & Trim(Str(a))
                 End If
                 
                 If Cells(a, 1) = "AMORT EXP - GOODWILL" Then
@@ -748,6 +762,7 @@ Sub actVsPriorNBudget_report()
                         Cells(a, 3) = inpt(f, 1, 7)
                         Cells(a, 4) = inpt(f, 13, 7)
                         Cells(a, 8) = inpt(f, 1, 7)
+                        Cells(a, 9) = inpt(f, 1, 7)
                     Next b
                 End If
  
